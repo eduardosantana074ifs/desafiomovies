@@ -3,6 +3,7 @@ package com.ifs.desafiomovies.data.repository
 
 import androidx.paging.*
 import com.ifs.desafiomovies.core.Either
+import com.ifs.desafiomovies.data.Resource
 import com.ifs.desafiomovies.data.local.datasource.SharedDataSource
 import com.ifs.desafiomovies.data.remote.apidatasource.MovieApiDataSource
 import com.ifs.desafiomovies.data.remote.apidatasource.retrofit.MoviePagingApiDataSourceRetro
@@ -16,11 +17,26 @@ import javax.inject.Inject
 class MovieRepositoryImpl @Inject constructor (
     private val sharedDataSource: SharedDataSource,
     private val movieApiDataSource: MovieApiDataSource,
-    private val moviePagingApiDataSourceRetro: MoviePagingApiDataSourceRetro
-):
+    private val moviePagingApiDataSourceRetro: MoviePagingApiDataSourceRetro):
     MovieRepository {
     companion object {
         private const val PAGE_SIZE = 20
+    }
+
+    override fun favorite() {
+        sharedDataSource.favorite()
+    }
+
+    override fun disfavor() {
+        sharedDataSource.disfavor()
+    }
+
+    override fun isFavorite(): Boolean {
+        return sharedDataSource.isFavorite()
+    }
+
+    override suspend fun getMovie(): Either<Movie, Exception> {
+        return movieApiDataSource.getMovie()
     }
 
     override suspend fun getSimilarMovies(): Flow<PagingData<Movie>> {

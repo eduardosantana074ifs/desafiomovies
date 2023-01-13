@@ -35,28 +35,71 @@ class MainActivity : AppCompatActivity() {
         lifecycle(mainViewModel.uiState, ::handleGetMovie)
         observe(mainViewModel.movieData, ::handleMovie)
     }
+
     private fun handleGetMovie(uiState: UiState) {
         when (uiState) {
-
+            is UiState.Loading -> {
+                progressDialog.show()
+            }
+            is UiState.Failure -> {
+                progressDialog.dismiss()
+            }
+            is UiState.Success -> {
+                progressDialog.dismiss()
+                toast("Carregado com sucesso!")
+            }
+            is UiState.Empty -> {
+                progressDialog.dismiss()
+            }
         }
     }
+
     private fun handleMovie(movieItemUiState: Movie){
         setupMovieDetail(movieItemUiState)
         setupListener()
         handleGetSimilarMovies()
     }
 
-
     private fun setupMovieDetail(movie: Movie){
-
+        voteCount = movie.vote_count
+        if(mainViewModel.isFavorite()){
+            binding.favorite()
+            voteCount++
+        }else {
+            binding.disfavor()
+        }
+        binding.tvMovieNameLg.text = movie.title
+        binding.tvMovieFavoriteCount.text = voteCount.toString()
+        binding.tvMoviePopularityCount.text = movie.popularity.toString()
+        Glide.with(binding.root.context)
+            .load(movie.poster_path)
+            .placeholder(R.drawable.photo_load)
+            .fallback(R.drawable.broken_image)
+            .into(binding.ivMoviePosterLg)
     }
 
     private fun setupListener(){
-
+        binding.ivFavorite.setOnClickListener {
+            if(mainViewModel.isFavorite()){
+                binding.disfavor()
+                mainViewModel.disfavor()
+                voteCount--
+                binding.tvMovieFavoriteCount.text = voteCount.toString()
+            }
+            else{
+                binding.favorite()
+                mainViewModel.favorite()
+                voteCount++
+                binding.tvMovieFavoriteCount.text = voteCount.toString()
+            }
+        }
     }
 
     private fun handleGetSimilarMovies() {
-
+        lifecycleScope.launch{
+            mainViewModel.moviesSimilarPaging().collectLatest { response ->
+                moviesSimilarListAdapter.submitData(response)
+            }
+        }
     }
-
 }
