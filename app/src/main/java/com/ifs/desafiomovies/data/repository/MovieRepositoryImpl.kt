@@ -3,7 +3,6 @@ package com.ifs.desafiomovies.data.repository
 
 import androidx.paging.*
 import com.ifs.desafiomovies.core.Either
-import com.ifs.desafiomovies.data.Resource
 import com.ifs.desafiomovies.data.local.datasource.SharedDataSource
 import com.ifs.desafiomovies.data.remote.apidatasource.MovieApiDataSource
 import com.ifs.desafiomovies.data.remote.apidatasource.retrofit.MoviePagingApiDataSourceRetro
